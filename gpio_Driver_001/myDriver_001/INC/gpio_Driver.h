@@ -78,7 +78,7 @@ void GPIO_Toggle(GPIO_TypeDef *pGPIOx,uint8_t Pin);
 uint8_t GPIO_Read(GPIO_TypeDef *pGPIOx, uint8_t Pin );
 
 void EXTI_IRQHandler( uint8_t IRQ, uint8_t ENorDI );
-void EXTI_IRQPriority(uint8_t IRQ,uint8_t Priority);
+void EXTI_IRQPriority(uint8_t IRQ,uint32_t Priority);
 void GPIO_IRQHandler(uint8_t Pin);
 
 
