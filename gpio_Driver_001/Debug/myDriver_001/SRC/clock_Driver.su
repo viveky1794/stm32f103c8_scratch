@@ -1,0 +1,4 @@
+clock_Driver.c:10:6:set_RCC_HSI_Clock_AHB_xx	4	static
+clock_Driver.c:23:6:set_RCC_HSI_Clock_AHB_40MHz	4	static
+clock_Driver.c:53:6:set_RCC_HSI_Clock_APB2_1MHz	4	static
+clock_Driver.c:87:6:TIMER1	4	static
