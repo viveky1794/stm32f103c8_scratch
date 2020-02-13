@@ -118,7 +118,7 @@ void EXTI_IRQHandler( uint8_t IRQ, uint8_t ENorDI )
 	// 1 : Set NVIC Register
 		// 1.1 : NVIC Interrupt Set Enable Regiter
 			*(NVIC_ISER0)	|= (1<<IRQ);
-			*(NVIC_ICER0)	|= (0<<IRQ);
+			//*(NVIC_ICER0)	|= (0<<IRQ);
 	}else if(DI)
 	{
 		// 1.2 : NVIC INterrupt Clear Register
