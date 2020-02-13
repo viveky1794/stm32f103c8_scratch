@@ -117,8 +117,9 @@ void EXTI_IRQHandler( uint8_t IRQ, uint8_t ENorDI )
 	{
 	// 1 : Set NVIC Register
 		// 1.1 : NVIC Interrupt Set Enable Regiter
+
 			*(NVIC_ISER0)	|= (1<<IRQ);
-			//*(NVIC_ICER0)	|= (0<<IRQ);
+
 	}else if(DI)
 	{
 		// 1.2 : NVIC INterrupt Clear Register
@@ -128,7 +129,7 @@ void EXTI_IRQHandler( uint8_t IRQ, uint8_t ENorDI )
 }
 
 
-void EXTI_IRQPriority(uint8_t IRQ,uint8_t Priority)
+void EXTI_IRQPriority(uint8_t IRQ,uint32_t Priority)
 {
 
 	// 1.3 : NVIC Priority Register
@@ -138,8 +139,7 @@ void EXTI_IRQPriority(uint8_t IRQ,uint8_t Priority)
 	uint32_t *NVIC_IPR_x = 	((NVIC_IPR + (ipr)));
 
 	*NVIC_IPR_x	|= ( Priority << shift );
-	//*(NVIC_IPR + (ipr*4)) |= (Priority << shift );
-	//*NVIC_IPR_5	|= (Priority << shift );
+
 }
 
 void GPIO_IRQHandler(uint8_t Pin)
@@ -148,10 +148,10 @@ void GPIO_IRQHandler(uint8_t Pin)
 if( EXTI->PR & (1 << Pin) )
 {
 		EXTI->PR |= 1<<Pin;//clear pending bit
+		GPIOC->BSRR |= BSRR_BIT_SET(13);
+		delay();
 
 }
-EXTI_IRQHandler(23, DI);
-
 
 }
 
