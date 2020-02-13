@@ -234,18 +234,4 @@ typedef struct
 #define  RCC_CFGR_SWS_PLL                    ((uint32_t)0x00000008)        /*!< PLL used as system clock */
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif /* INC_STM32F103C8_MCU_H_ */
