@@ -52,10 +52,7 @@ for(uint32_t i=0;i<605000;i++);
 /***********	IRQ Handler	-> Interrupt Service Routine	************/
 void EXTI9_5_IRQHandler(void)
 {
-
 GPIO_IRQHandler(5);
-delay();
-
 }
 
 int main(void)
