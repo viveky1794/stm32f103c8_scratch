@@ -13,8 +13,11 @@
  * @FUN			: SPIx_Init
  * @Brief		: This API takes care of all Initialisions including RCC AHB and APB2 BUS clock
  * @para		:
- * @retval		:
  *
+ * @retval		:
+ * @NOTE		: If SSM=0(Hardware Slave Select), SPE=1 then NSS pin is 0 automatically.
+ *				  if  SSM=0(Hardware Slave Select), SPE=0 then NSS pin is 1 automatically.
+ *				  All this will happen only when (Slave Select Output Enable )SSOE=1. This pin is control pin.
  */
 
 void SPI1_Init(void)
@@ -32,11 +35,21 @@ void SPI1_Init(void)
 			// Pin A6	--> SPI1_MISO
 			// Pin A7	--> SPI1_MOSI
 
-			RCC->APB2ENR	|= RCC_APB2RSTR_AFIORST | RCC_APB2RSTR_SPI1RST | RCC_APB2RSTR_IOPBRST;
+			RCC->APB2ENR	|= RCC_APB2RSTR_AFIORST | RCC_APB2RSTR_SPI1RST | RCC_APB2RSTR_IOPARST;
+
+			GPIO_Init(GPIOA,4,GPIO_Mode_Out_PP,GPIO_Speed_10MHz);//NSS
+			GPIO_Init(GPIOA,5,GPIO_Mode_Out_PP,GPIO_Speed_10MHz);//SCK
+			GPIO_Init(GPIOA,6,GPIO_Mode_IPU,GPIO_Speed_INPUT);//MISO
+			GPIO_Init(GPIOA,7,GPIO_Mode_Out_PP,GPIO_Speed_10MHz);//MOSI
+
+
 	// 3 : SPI Register
 		// 3.1 SPI Conrtol Register
 			// 2-line unidirectional data mode selected in Full Duplex
+			// BIDIMODE = 0 and RXONLY = 0 ->> Full Duplex
 			SPI1->CR1	&= ~SPI_CR1_BIDIMODE;
+			SPI1->CR1	&= ~SPI_CR1_RXONLY;
+
 			// 1: Output enabled (transmit-only mode)
 			SPI1->CR1	|= SPI_CR1_BIDIOE;
 			// Data fram format is 16 bit long
@@ -50,10 +63,22 @@ void SPI1_Init(void)
 			SPI1->CR1	|= SPI_CR1_CPHA;
 			// Select as Master
 			SPI1->CR1	|= SPI_CR1_MSTR;
+			// Software Slave Manegment SSM
+			SPI1->CR1	|= SPI_CR1_SSM | SPI_CR1_SSI; //otherwise MODF will come and MSTR will reset.
 			// baudrate is dafault which is APB2/2
 			// Frame Fromat is MSB first
 			//Enable SIP do at last
-			SPI1->CR1	|= SPI_CR1_SPE;
+			SPI1->CR1	|= SPI_CR1_SPE; // This bit is not set as desired MODF occured.
+
+			SPI1->CR2	|= SPI_CR2_SSOE;// @ref NOTES
+}
+
+
+void SPI_Deinit(void)
+{
+	while( Flag_Status(BSY) ==  BSY_FLAG);
+
+	SPI1->CR1	&= ~SPI_CR1_SPE;
 
 }
 
@@ -117,7 +142,7 @@ return ERROR;
 /* ****************************************************************************************
  * @FUN			: SPIx_ReadData
  * @Brief		: Reading data from SPI Data Registers
- * 				
+ *
  * @para		:
  * @retval		:
  *
@@ -136,8 +161,8 @@ uint16_t SPIx_ReadData()
  * @FUN			: SPIx_Write
  * @Brief		: Writing Data to SPI Data Registers
  * 				  This is a blocking API utill all data is not transfered.
- * 				   
- * @para_1		: Data needs to be send 
+ *
+ * @para_1		: Data needs to be send
  * @para_2		: Length of Data
  * @retval		:
  *
@@ -149,10 +174,10 @@ uint16_t SPIx_Write(uint16_t *Data,uint8_t len)
 	{
 		// halt here if tx buffer is not empty
 		while( ! Flag_Status(TXE) );
-		
+
 		SPI1->DR |= *Data;
 		len -= 2;//beacuse our data is in two byte
 	}while(len);
-	
+
 	return 1;
 }
